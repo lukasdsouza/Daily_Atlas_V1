@@ -5,42 +5,31 @@ import GlobeViewer, { Country, countries } from "@/components/GlobeViewer";
 import NewsPanel from "@/components/NewsPanel";
 import StarsBackground from "@/components/StarsBackground";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Rocket, Info } from "lucide-react";
+import { Info, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [showCountryList, setShowCountryList] = useState(false);
 
   const handleCountrySelect = (country: Country) => {
-    toast(`Exploring news from ${country.name}`, {
+    toast(`Exploring ${country.name}`, {
       icon: "🌎",
     });
     setSelectedCountry(country);
   };
 
   return (
-    <div className="min-h-screen px-4 py-6 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       <StarsBackground />
       
       <Header />
       
-      <main className="max-w-4xl mx-auto">
-        <div className="flex flex-col items-center mb-8">
-          <div className="cosmos-card w-full max-w-xl mb-6">
-            <div className="flex items-start gap-3">
-              <Rocket className="w-6 h-6 text-space-bright shrink-0 mt-1" />
-              <p className="text-muted-foreground">
-                Welcome to <span className="text-space-bright font-medium">Daily Atlas</span>, 
-                your cosmic portal to global news. Rotate the interactive globe and select any 
-                highlighted country to explore its current headlines. The universe of information 
-                is at your fingertips!
-              </p>
-            </div>
-          </div>
-          
+      <main className="max-w-full mx-auto h-[calc(100vh-80px)]">
+        <div className="flex flex-col h-full relative">
           <ErrorBoundary>
-            <div className="w-full glassmorphism p-4 relative">
+            <div className="w-full h-full relative flex-grow">
               <button 
                 onClick={() => setShowInfo(!showInfo)}
                 className="absolute top-4 right-4 z-10 p-2 rounded-full bg-space-dark/60 hover:bg-space-dark/80 transition-colors"
@@ -67,26 +56,41 @@ const Index = () => {
             </div>
           </ErrorBoundary>
           
-          <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {countries.map((country) => (
-              <button
-                key={country.id}
-                onClick={() => handleCountrySelect(country)}
-                className={`px-3 py-1.5 text-sm rounded-full transition-all ${
-                  selectedCountry?.id === country.id 
-                    ? "bg-space-bright text-primary-foreground" 
-                    : "bg-space-dark hover:bg-space-purple text-white"
-                }`}
-              >
-                {country.name}
-              </button>
-            ))}
-          </div>
+          <button 
+            onClick={() => setShowCountryList(!showCountryList)}
+            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-space-dark/70 hover:bg-space-dark/90 backdrop-blur-sm px-4 py-2 rounded-full border border-space-purple/30 text-white text-sm flex items-center gap-2 transition-all"
+          >
+            {showCountryList ? "Hide Countries" : "Select Country"} 
+            <ArrowRight className={`w-4 h-4 transition-transform ${showCountryList ? "rotate-90" : ""}`} />
+          </button>
+          
+          {showCountryList && (
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 glassmorphism p-3 rounded-xl max-w-xs w-full">
+              <div className="flex flex-wrap justify-center gap-2 max-h-40 overflow-y-auto px-2 py-1">
+                {countries.map((country) => (
+                  <button
+                    key={country.id}
+                    onClick={() => {
+                      handleCountrySelect(country);
+                      setShowCountryList(false);
+                    }}
+                    className={`px-3 py-1.5 text-sm rounded-full transition-all ${
+                      selectedCountry?.id === country.id 
+                        ? "bg-space-bright text-primary-foreground" 
+                        : "bg-space-dark hover:bg-space-purple text-white"
+                    }`}
+                  >
+                    {country.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
       
-      <footer className="text-center text-muted-foreground text-sm mt-10">
-        <p>Daily Atlas &copy; {new Date().getFullYear()} - Explore the world's news from space</p>
+      <footer className="text-center text-muted-foreground text-xs absolute bottom-2 w-full opacity-50 hover:opacity-100 transition-opacity">
+        <p>Daily Atlas &copy; {new Date().getFullYear()}</p>
       </footer>
       
       {selectedCountry && (

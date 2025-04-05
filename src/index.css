@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    --background: 240 25% 10%;
+    --background: 240 25% 8%;
     --foreground: 210 40% 98%;
 
     --card: 240 25% 15%;
@@ -52,12 +52,13 @@
       radial-gradient(circle at 20% 30%, rgba(110, 89, 165, 0.15) 0%, transparent 35%),
       radial-gradient(circle at 80% 70%, rgba(51, 195, 240, 0.1) 0%, transparent 30%);
     background-attachment: fixed;
+    background-color: #0c0e16; /* Darker space background */
   }
 }
 
 @layer components {
   .cosmos-card {
-    @apply bg-card/60 backdrop-blur-sm border border-space-purple/20 rounded-xl shadow-lg shadow-space-purple/10 p-4;
+    @apply bg-card/60 backdrop-blur-sm border border-space-purple/20 rounded-xl shadow-lg shadow-space-purple/10 p-3;
   }
   
   .glassmorphism {
@@ -88,7 +89,7 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -102,4 +103,21 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(155, 135, 245, 0.8);
+}
+
+/* Add extra animation keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Add nebula animation */
+.nebula {
+  position: absolute;
+  animation: pulse-subtle 8s ease-in-out infinite;
 }

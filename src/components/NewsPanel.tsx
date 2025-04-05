@@ -59,15 +59,15 @@ const NewsPanel: React.FC<NewsPanelProps> = ({ country, onClose }) => {
   };
   
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4">
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-4 pointer-events-none">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto" onClick={onClose}></div>
       
-      <div className="glassmorphism w-full max-w-lg max-h-[80vh] overflow-hidden flex flex-col relative z-10 animate-in fade-in">
-        <div className="flex items-center justify-between p-4 border-b border-space-purple/30">
+      <div className="glassmorphism w-full max-w-md max-h-[70vh] overflow-hidden flex flex-col relative z-10 animate-in fade-in pointer-events-auto">
+        <div className="flex items-center justify-between p-3 border-b border-space-purple/30">
           <div className="flex items-center gap-2">
             <Globe className="text-space-bright h-5 w-5" />
             <h3 className="font-title text-lg text-white">
-              {country.name} News
+              {country.name}
             </h3>
           </div>
           
@@ -79,11 +79,11 @@ const NewsPanel: React.FC<NewsPanelProps> = ({ country, onClose }) => {
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-3">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-10">
               <RotateCcw className="h-8 w-8 text-space-bright animate-spin mb-4" />
-              <p>Loading top stories from {country.name}...</p>
+              <p>Loading news from {country.name}...</p>
             </div>
           ) : error ? (
             <div className="text-center py-10">
@@ -109,12 +109,11 @@ const NewsPanel: React.FC<NewsPanelProps> = ({ country, onClose }) => {
               <p>No news available for {country.name} at the moment.</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {news.map((item, index) => (
                 <div key={index} className="cosmos-card hover:bg-card/80 transition-colors">
                   <h4 className="font-semibold text-space-bright">{item.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
-                  <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+                  <div className="flex justify-between items-center mt-1 text-xs text-muted-foreground">
                     <span>{item.source}</span>
                     <span>{formatDate(item.publishedAt)}</span>
                   </div>
@@ -175,8 +174,8 @@ const generateMockNews = (countryName: string): NewsItem[] => {
     const source = newsSources[Math.floor(Math.random() * newsSources.length)];
     
     return {
-      title: `${countryName}: ${item.headline}`,
-      description: `Latest developments in ${item.topic} from ${countryName} show significant changes that could impact citizens across the nation. Experts weigh in on what this means for the future.`,
+      title: `${item.headline} in ${countryName}`,
+      description: `Latest developments in ${item.topic} from ${countryName} show significant changes that could impact citizens across the nation.`,
       url: "https://example.com/news",
       source: source,
       publishedAt: publishedDate.toISOString(),

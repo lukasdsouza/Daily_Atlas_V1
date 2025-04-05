@@ -4,11 +4,11 @@ import { GlobeIcon } from "lucide-react";
 
 const Header: React.FC = () => {
   return (
-    <header className="flex justify-center items-center p-4 mb-4">
+    <header className="flex justify-center items-center py-3 px-4">
       <div className="relative">
-        <h1 className="text-3xl md:text-4xl font-title font-bold text-white text-center">
+        <h1 className="text-2xl md:text-3xl font-title font-bold text-white text-center">
           <span className="text-space-bright animate-pulse-glow inline-flex items-center gap-2">
-            <GlobeIcon className="w-7 h-7 md:w-8 md:h-8 animate-rotate-globe" />
+            <GlobeIcon className="w-6 h-6 md:w-7 md:h-7 animate-rotate-globe" />
             Daily Atlas
           </span>
         </h1>

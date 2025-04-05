@@ -54,7 +54,7 @@ const Globe: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry }) => {
     "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png",
   ]);
 
-  // Auto-rotate but slower
+  // Auto-rotate but slower when no interaction
   useFrame(() => {
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.0005;
@@ -132,7 +132,7 @@ const GlobeViewer: React.FC<GlobeViewerProps> = ({ onCountrySelect, selectedCoun
   const canvasRef = useRef<HTMLDivElement>(null);
   
   return (
-    <div ref={canvasRef} className="relative w-full h-64 sm:h-80 md:h-96">
+    <div ref={canvasRef} className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0, 2.5], fov: 45 }}
         style={{ background: "transparent" }}
