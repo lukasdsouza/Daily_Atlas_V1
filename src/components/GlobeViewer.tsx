@@ -67,7 +67,8 @@ const Comet = () => {
 
 // Sun component
 const Sun = () => {
-  const sunPosition = [50, 5, -30];
+  // Fixed: Ensure sunPosition is a tuple with exactly 3 elements
+  const sunPosition: [number, number, number] = [50, 5, -30];
   
   return (
     <group position={sunPosition}>
