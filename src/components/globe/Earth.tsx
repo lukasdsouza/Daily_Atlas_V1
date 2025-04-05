@@ -26,41 +26,76 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
   ]);
 
   // Auto-rotate but slower when no interaction
-  useFrame(() => {
+  useFrame(({ clock }) => {
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.0005;
     }
   });
 
-  // Markers for highlighted countries
+  // Enhanced markers for highlighted countries
   const markers = countries.map((country) => {
     const position = latLongToVector3(country.latitude, country.longitude, 1.02);
     const isSelected = selectedCountry?.id === country.id;
     
     return (
       <group key={country.id} position={position} onClick={() => onCountrySelect(country)}>
+        {/* Base marker for all countries */}
         <mesh>
-          <sphereGeometry args={[0.03, 16, 16]} />
+          <sphereGeometry args={[0.025, 16, 16]} />
           <meshStandardMaterial 
             color={isSelected ? "#33C3F0" : "#9b87f5"} 
             emissive={isSelected ? "#33C3F0" : "#6E59A5"}
             emissiveIntensity={isSelected ? 2 : 0.5}
+            metalness={0.5}
+            roughness={0.2}
           />
         </mesh>
-        {isSelected && (
-          <mesh>
-            <sphereGeometry args={[0.04, 16, 16]} />
-            <meshStandardMaterial
-              color="#33C3F0"
-              transparent={true}
-              opacity={0.4}
-            />
-          </mesh>
-        )}
+        
+        {/* Ring around marker */}
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.035, 0.045, 16]} />
+          <meshStandardMaterial 
+            color={isSelected ? "#33C3F0" : "#9b87f5"} 
+            emissive={isSelected ? "#33C3F0" : "#6E59A5"}
+            transparent={true}
+            opacity={0.7}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+        
+        {/* Glow effect */}
+        <mesh>
+          <sphereGeometry args={[0.05, 16, 16]} />
+          <meshStandardMaterial
+            color={isSelected ? "#33C3F0" : "#9b87f5"}
+            transparent={true}
+            opacity={0.3}
+          />
+        </mesh>
+        
+        {/* Light point */}
+        <pointLight 
+          color={isSelected ? "#33C3F0" : "#9b87f5"} 
+          intensity={isSelected ? 0.5 : 0.2} 
+          distance={0.3}
+        />
         
         {/* Add pulse effect for selected country */}
         {isSelected && (
           <PulseMarker />
+        )}
+        
+        {/* Add vertical beam for selected country */}
+        {isSelected && (
+          <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.01, 0.01, 0.3, 8]} />
+            <meshStandardMaterial 
+              color="#33C3F0" 
+              transparent={true} 
+              opacity={0.5}
+              emissive="#33C3F0"
+            />
+          </mesh>
         )}
       </group>
     );
@@ -86,6 +121,19 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
       
       {/* Aurora effect */}
       <EarthAurora />
+      
+      {/* Glowing atmosphere */}
+      <mesh>
+        <sphereGeometry args={[1.02, 32, 32]} />
+        <meshStandardMaterial
+          color="#4DF7B8"
+          transparent={true}
+          opacity={0.1}
+          emissive="#4DF7B8"
+          emissiveIntensity={0.1}
+          side={THREE.BackSide}
+        />
+      </mesh>
       
       {/* Country markers */}
       {markers}
