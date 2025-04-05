@@ -20,14 +20,14 @@ const StarsBackground: React.FC = () => {
     
     const container = starsContainerRef.current;
     const stars: Star[] = [];
-    const starCount = isMobile ? 100 : 200; // More stars for immersive effect
+    const starCount = isMobile ? 150 : 300; // Mais estrelas para efeito imersivo
     
     // Create stars
     for (let i = 0; i < starCount; i++) {
       const star = document.createElement("div");
-      star.className = "star animate-star-twinkle";
+      star.className = "star";
       
-      const size = Math.random() * 2.5 + 0.5; // Slightly larger stars
+      const size = Math.random() * 3 + 0.5; // Estrelas ligeiramente maiores
       const x = Math.random() * window.innerWidth;
       const y = Math.random() * window.innerHeight;
       
@@ -37,6 +37,7 @@ const StarsBackground: React.FC = () => {
       star.style.top = `${y}px`;
       star.style.animationDelay = `${Math.random() * 4}s`;
       star.style.opacity = `${Math.random() * 0.5 + 0.5}`;
+      star.style.animationDuration = `${Math.random() * 3 + 2}s`;
       
       container.appendChild(star);
       
@@ -50,15 +51,18 @@ const StarsBackground: React.FC = () => {
       });
     }
     
-    // Add a few "nebula" effects
-    for (let i = 0; i < 3; i++) {
+    // Add nebulas (colorful gas clouds)
+    for (let i = 0; i < 5; i++) {
       const nebula = document.createElement("div");
       nebula.className = "nebula";
       
-      const size = Math.random() * 150 + 100;
+      const size = Math.random() * 200 + 150;
       const x = Math.random() * window.innerWidth;
       const y = Math.random() * window.innerHeight;
-      const hue = Math.floor(Math.random() * 60) + 240; // Blue to purple hues
+      
+      // Choose between blue, purple, and teal hues
+      const hueOptions = [240, 280, 180]; // Blue, Purple, Teal
+      const hue = hueOptions[Math.floor(Math.random() * hueOptions.length)];
       
       nebula.style.width = `${size}px`;
       nebula.style.height = `${size}px`;
@@ -67,13 +71,50 @@ const StarsBackground: React.FC = () => {
       nebula.style.background = `radial-gradient(circle, hsla(${hue}, 80%, 60%, 0.1) 0%, transparent 70%)`;
       nebula.style.borderRadius = '50%';
       nebula.style.opacity = '0.4';
-      nebula.style.filter = 'blur(8px)';
+      nebula.style.filter = 'blur(20px)';
+      nebula.style.animation = `pulse-subtle ${Math.random() * 5 + 8}s ease-in-out infinite`;
       
       container.appendChild(nebula);
     }
     
+    // Add shooting stars
+    const createShootingStar = () => {
+      const shootingStar = document.createElement("div");
+      shootingStar.className = "shooting-star";
+      
+      const startX = Math.random() * window.innerWidth;
+      const startY = Math.random() * (window.innerHeight / 2); // Start in upper half
+      
+      shootingStar.style.left = `${startX}px`;
+      shootingStar.style.top = `${startY}px`;
+      shootingStar.style.width = `${Math.random() * 50 + 50}px`;
+      shootingStar.style.height = `2px`;
+      
+      // Random angle between 30 and 60 degrees
+      const angle = Math.random() * 30 + 30;
+      shootingStar.style.transform = `rotate(${angle}deg)`;
+      
+      container.appendChild(shootingStar);
+      
+      // Remove after animation completes
+      setTimeout(() => {
+        if (container.contains(shootingStar)) {
+          container.removeChild(shootingStar);
+        }
+      }, 1000);
+    };
+    
+    // Create shooting star periodically
+    const shootingStarInterval = setInterval(() => {
+      if (Math.random() > 0.7) { // 30% chance each interval
+        createShootingStar();
+      }
+    }, 3000);
+    
     // Cleanup
     return () => {
+      clearInterval(shootingStarInterval);
+      
       stars.forEach(star => {
         if (container.contains(star.element)) {
           container.removeChild(star.element);
@@ -85,6 +126,14 @@ const StarsBackground: React.FC = () => {
       nebulas.forEach(nebula => {
         if (container.contains(nebula)) {
           container.removeChild(nebula);
+        }
+      });
+      
+      // Remove any shooting stars
+      const shootingStars = container.querySelectorAll('.shooting-star');
+      shootingStars.forEach(star => {
+        if (container.contains(star)) {
+          container.removeChild(star);
         }
       });
     };
