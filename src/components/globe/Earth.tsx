@@ -1,7 +1,7 @@
 
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";  // Changed import from fiber to drei
+import { useTexture } from "@react-three/drei";  // Fixed: import from drei instead of fiber
 import * as THREE from "three";
 import { Country } from "@/data/countries";
 import { latLongToVector3 } from "@/utils/globeUtils";
