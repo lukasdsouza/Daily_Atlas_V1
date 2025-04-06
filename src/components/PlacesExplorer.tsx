@@ -39,20 +39,20 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
     <>
       <button 
         onClick={() => setShowPlaces(!showPlaces)}
-        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-space-dark/70 hover:bg-space-dark/90 backdrop-blur-sm px-4 py-2 rounded-full border border-space-purple/30 text-white text-sm flex items-center gap-2 transition-all"
+        className="fixed bottom-6 right-6 z-10 bg-space-purple text-white shadow-lg px-4 py-3 rounded-full text-sm flex items-center gap-2 transition-all hover:bg-space-purple/90 active:scale-95 touch-action-manipulation"
       >
         {showPlaces ? "Esconder" : "Explorar Lugares"} 
         <ArrowRight className={`w-4 h-4 transition-transform ${showPlaces ? "rotate-90" : ""}`} />
       </button>
       
       {showPlaces && (
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 glassmorphism p-3 rounded-xl max-w-5xl w-full animate-in fade-in-50">
-          <div className="flex justify-between items-center mb-3">
+        <div className="fixed inset-x-4 bottom-20 z-10 glassmorphism p-4 rounded-xl max-w-5xl mx-auto animate-in fade-in-50 shadow-xl border border-space-purple/30">
+          <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
             <h3 className="text-lg font-bold text-space-bright">Explore {cityName}</h3>
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-1 touch-action-pan-x scrollbar-none">
               <button
                 onClick={() => setActivePlaceFilter('all')}
-                className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                className={`px-3 py-2 text-xs rounded-full transition-colors flex items-center gap-1 min-w-max ${
                   activePlaceFilter === 'all' 
                     ? "bg-space-bright text-primary-foreground" 
                     : "bg-space-dark/80 hover:bg-space-purple/70 text-white"
@@ -62,7 +62,7 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
               </button>
               <button
                 onClick={() => setActivePlaceFilter('tourist')}
-                className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                className={`px-3 py-2 text-xs rounded-full transition-colors flex items-center gap-1 min-w-max ${
                   activePlaceFilter === 'tourist' 
                     ? "bg-blue-500 text-white" 
                     : "bg-space-dark/80 hover:bg-blue-500/70 text-white"
@@ -72,7 +72,7 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
               </button>
               <button
                 onClick={() => setActivePlaceFilter('restaurant')}
-                className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                className={`px-3 py-2 text-xs rounded-full transition-colors flex items-center gap-1 min-w-max ${
                   activePlaceFilter === 'restaurant' 
                     ? "bg-green-500 text-white" 
                     : "bg-space-dark/80 hover:bg-green-500/70 text-white"
@@ -82,7 +82,7 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
               </button>
               <button
                 onClick={() => setActivePlaceFilter('nightclub')}
-                className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                className={`px-3 py-2 text-xs rounded-full transition-colors flex items-center gap-1 min-w-max ${
                   activePlaceFilter === 'nightclub' 
                     ? "bg-purple-500 text-white" 
                     : "bg-space-dark/80 hover:bg-purple-500/70 text-white"
@@ -92,7 +92,7 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
               </button>
               <button
                 onClick={() => setActivePlaceFilter('event')}
-                className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                className={`px-3 py-2 text-xs rounded-full transition-colors flex items-center gap-1 min-w-max ${
                   activePlaceFilter === 'event' 
                     ? "bg-red-500 text-white" 
                     : "bg-space-dark/80 hover:bg-red-500/70 text-white"

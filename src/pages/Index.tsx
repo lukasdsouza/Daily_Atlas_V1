@@ -12,14 +12,12 @@ import { rioPlaces, Place, getPlacesByCity } from "@/data/countries";
 import UserMenu from "@/components/UserMenu";
 import CountryInfo from "@/components/CountryInfo";
 import PlacesExplorer from "@/components/PlacesExplorer";
-import CountrySelector from "@/components/CountrySelector";
 
 const Index = () => {
   const navigate = useNavigate();
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [showInfo, setShowInfo] = useState(false);
-  const [showCountryList, setShowCountryList] = useState(false);
   const [showPlaces, setShowPlaces] = useState(false);
   const [activePlaceFilter, setActivePlaceFilter] = useState<'all' | 'tourist' | 'restaurant' | 'nightclub' | 'event'>('all');
   const [preferredCountries, setPreferredCountries] = useState<Country[]>([]);
@@ -51,11 +49,6 @@ const Index = () => {
       }
     }
   }, []);
-
-  // Filter countries by continent
-  const filteredCountries = selectedContinent === "Todos" 
-    ? countries
-    : countries.filter(country => country.continent === selectedContinent);
 
   const handleCountrySelect = (country: Country) => {
     toast(`Explorando ${country.name}`, {
@@ -100,6 +93,9 @@ const Index = () => {
                 onLogout={handleLogout}
                 selectedContinent={selectedContinent}
                 setSelectedContinent={setSelectedContinent}
+                onCountrySelect={handleCountrySelect}
+                countries={countries}
+                selectedCountry={selectedCountry}
               />
               
               <GlobeViewer 
@@ -119,16 +115,6 @@ const Index = () => {
             places={currentPlaces}
             onPlaceSelect={setSelectedPlace}
             isRio={isSelectedCityWithPlaces}
-          />
-          
-          <CountrySelector 
-            countries={filteredCountries}
-            selectedCountry={selectedCountry}
-            preferredCountries={preferredCountries}
-            isLoggedIn={isLoggedIn}
-            showCountryList={showCountryList}
-            setShowCountryList={setShowCountryList}
-            onCountrySelect={handleCountrySelect}
           />
         </div>
       </main>
