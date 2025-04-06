@@ -30,20 +30,25 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
 
   if (!isRio) return null;
 
+  // Obter o nome da cidade atual a partir dos lugares
+  const cityName = places.length > 0 && places[0].address 
+    ? places[0].address.split(',')[0] 
+    : "esta cidade";
+
   return (
     <>
       <button 
         onClick={() => setShowPlaces(!showPlaces)}
         className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-space-dark/70 hover:bg-space-dark/90 backdrop-blur-sm px-4 py-2 rounded-full border border-space-purple/30 text-white text-sm flex items-center gap-2 transition-all"
       >
-        {showPlaces ? "Esconder" : "Explorar Rio de Janeiro"} 
+        {showPlaces ? "Esconder" : "Explorar Lugares"} 
         <ArrowRight className={`w-4 h-4 transition-transform ${showPlaces ? "rotate-90" : ""}`} />
       </button>
       
       {showPlaces && (
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 glassmorphism p-3 rounded-xl max-w-5xl w-full animate-in fade-in-50">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-bold text-space-bright">Explore Rio de Janeiro</h3>
+            <h3 className="text-lg font-bold text-space-bright">Explore {cityName}</h3>
             <div className="flex gap-2">
               <button
                 onClick={() => setActivePlaceFilter('all')}
@@ -100,13 +105,19 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
           
           <div className="max-h-80 overflow-y-auto px-2 py-1 custom-scrollbar">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredPlaces.map(place => (
-                <PlaceCard 
-                  key={place.id} 
-                  place={place} 
-                  onClick={() => onPlaceSelect(place)}
-                />
-              ))}
+              {filteredPlaces.length > 0 ? (
+                filteredPlaces.map(place => (
+                  <PlaceCard 
+                    key={place.id} 
+                    place={place} 
+                    onClick={() => onPlaceSelect(place)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8 text-space-bright/70">
+                  Nenhum lugar encontrado para este filtro.
+                </div>
+              )}
             </div>
           </div>
         </div>

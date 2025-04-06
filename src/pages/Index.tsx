@@ -8,7 +8,7 @@ import StarsBackground from "@/components/StarsBackground";
 import PlaceDetails from "@/components/PlaceDetails";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { toast } from "sonner";
-import { rioPlaces, Place } from "@/data/countries";
+import { rioPlaces, Place, getPlacesByCity } from "@/data/countries";
 import UserMenu from "@/components/UserMenu";
 import CountryInfo from "@/components/CountryInfo";
 import PlacesExplorer from "@/components/PlacesExplorer";
@@ -24,6 +24,8 @@ const Index = () => {
   const [activePlaceFilter, setActivePlaceFilter] = useState<'all' | 'tourist' | 'restaurant' | 'nightclub' | 'event'>('all');
   const [preferredCountries, setPreferredCountries] = useState<Country[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedContinent, setSelectedContinent] = useState("Todos");
+  const [currentPlaces, setCurrentPlaces] = useState<Place[]>(rioPlaces);
 
   // Auto-select Rio de Janeiro on initial load
   useEffect(() => {
@@ -45,10 +47,15 @@ const Index = () => {
         setPreferredCountries(parsed);
         setIsLoggedIn(true);
       } catch (e) {
-        console.error("Failed to parse preferred countries", e);
+        console.error("Falha ao analisar países preferidos", e);
       }
     }
   }, []);
+
+  // Filter countries by continent
+  const filteredCountries = selectedContinent === "Todos" 
+    ? countries
+    : countries.filter(country => country.continent === selectedContinent);
 
   const handleCountrySelect = (country: Country) => {
     toast(`Explorando ${country.name}`, {
@@ -56,8 +63,10 @@ const Index = () => {
     });
     setSelectedCountry(country);
     
-    // Show places panel if it's Rio
-    if (country.id === "rio") {
+    // Mostrar painel de lugares se for uma cidade
+    if (country.isCity) {
+      const places = getPlacesByCity(country.id);
+      setCurrentPlaces(places);
       setShowPlaces(true);
     } else {
       setShowPlaces(false);
@@ -68,11 +77,11 @@ const Index = () => {
     localStorage.removeItem('preferredCountries');
     setPreferredCountries([]);
     setIsLoggedIn(false);
-    toast.success("Logged out successfully");
+    toast.success("Desconectado com sucesso");
     navigate('/login');
   };
 
-  const isRio = selectedCountry?.id === "rio";
+  const isSelectedCityWithPlaces = selectedCountry?.isCity && getPlacesByCity(selectedCountry.id).length > 0;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -89,6 +98,8 @@ const Index = () => {
                 setShowInfo={setShowInfo}
                 isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
+                selectedContinent={selectedContinent}
+                setSelectedContinent={setSelectedContinent}
               />
               
               <GlobeViewer 
@@ -105,13 +116,13 @@ const Index = () => {
             setShowPlaces={setShowPlaces}
             activePlaceFilter={activePlaceFilter}
             setActivePlaceFilter={setActivePlaceFilter}
-            places={rioPlaces}
+            places={currentPlaces}
             onPlaceSelect={setSelectedPlace}
-            isRio={isRio}
+            isRio={isSelectedCityWithPlaces}
           />
           
           <CountrySelector 
-            countries={countries}
+            countries={filteredCountries}
             selectedCountry={selectedCountry}
             preferredCountries={preferredCountries}
             isLoggedIn={isLoggedIn}

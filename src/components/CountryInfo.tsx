@@ -16,6 +16,11 @@ const CountryInfo: React.FC<CountryInfoProps> = ({ selectedCountry }) => {
         <div className="fixed left-4 bottom-16 md:left-6 md:bottom-6 bg-space-dark/90 backdrop-blur-sm p-3 rounded-lg text-white border border-space-purple/50 text-sm shadow-lg transition-all duration-300 ease-in-out max-w-[250px]">
           <h3 className="font-bold mb-1">{selectedCountry.name}</h3>
           <p className="text-xs text-space-bright/70">{selectedCountry.description || "Explore este local no mapa."}</p>
+          {selectedCountry.continent && (
+            <p className="text-xs text-space-bright/70 mt-1">
+              <span className="font-medium">Continente:</span> {selectedCountry.continent}
+            </p>
+          )}
         </div>
       )}
       
@@ -26,6 +31,11 @@ const CountryInfo: React.FC<CountryInfoProps> = ({ selectedCountry }) => {
             <div>
               <h3 className="font-bold text-lg">{selectedCountry.name}</h3>
               <p className="text-xs text-space-bright/70">{selectedCountry.description}</p>
+              {selectedCountry.continent && (
+                <p className="text-xs text-space-bright/70 mt-1">
+                  <span className="font-medium">Continente:</span> {selectedCountry.continent}
+                </p>
+              )}
             </div>
           </div>
         </div>

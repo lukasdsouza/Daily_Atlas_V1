@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Info, User, Settings, LogOut, Menu } from "lucide-react";
+import { Info, User, Settings, LogOut, Menu, Globe, MapPin, Home } from "lucide-react";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -16,19 +16,24 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { continents } from "@/data/countries";
 
 interface UserMenuProps {
   showInfo: boolean;
   setShowInfo: (show: boolean) => void;
   isLoggedIn: boolean;
   onLogout: () => void;
+  selectedContinent: string;
+  setSelectedContinent: (continent: string) => void;
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({ 
   showInfo, 
   setShowInfo, 
   isLoggedIn, 
-  onLogout 
+  onLogout,
+  selectedContinent,
+  setSelectedContinent
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -60,27 +65,106 @@ const UserMenu: React.FC<UserMenuProps> = ({
                   className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-space-purple/20 transition-colors"
                   onClick={() => setOpen(false)}
                 >
-                  <span className="text-sm">Explorar Rio de Janeiro</span>
+                  <Home className="w-4 h-4" />
+                  <span className="text-sm">Página Inicial</span>
                 </a>
-                <a 
-                  href="/login" 
-                  className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-space-purple/20 transition-colors"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="text-sm">Preferências</span>
-                </a>
-                {isLoggedIn && (
-                  <button 
-                    onClick={() => {
-                      onLogout();
-                      setOpen(false);
-                    }}
-                    className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-space-purple/20 transition-colors text-red-400"
+                
+                {/* Dropdown de Continentes */}
+                <div className="px-4">
+                  <h3 className="text-xs font-medium mb-2 text-space-bright/70">Continentes</h3>
+                  <div className="flex flex-col gap-1">
+                    {continents.map((continent) => (
+                      <button
+                        key={continent}
+                        onClick={() => {
+                          setSelectedContinent(continent);
+                          setOpen(false);
+                        }}
+                        className={`flex items-center gap-2 text-sm px-3 py-1.5 rounded-md transition-colors ${
+                          selectedContinent === continent 
+                            ? "bg-space-purple/30 text-white" 
+                            : "hover:bg-space-purple/20"
+                        }`}
+                      >
+                        <Globe className="w-3.5 h-3.5" />
+                        {continent}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Explorar Cidades */}
+                <div className="px-4 mt-2">
+                  <h3 className="text-xs font-medium mb-2 text-space-bright/70">Cidades Populares</h3>
+                  <div className="flex flex-col gap-1">
+                    <a 
+                      href="/" 
+                      className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md hover:bg-space-purple/20 transition-colors"
+                      onClick={() => setOpen(false)}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      Rio de Janeiro
+                    </a>
+                    <a 
+                      href="/" 
+                      className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md hover:bg-space-purple/20 transition-colors"
+                      onClick={() => setOpen(false)}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      Nova York
+                    </a>
+                    <a 
+                      href="/" 
+                      className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md hover:bg-space-purple/20 transition-colors"
+                      onClick={() => setOpen(false)}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      Paris
+                    </a>
+                    <a 
+                      href="/" 
+                      className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-md hover:bg-space-purple/20 transition-colors"
+                      onClick={() => setOpen(false)}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      Tóquio
+                    </a>
+                  </div>
+                </div>
+                
+                {/* Configurações e Login */}
+                <div className="mt-4 border-t border-space-purple/20 pt-4 px-4">
+                  <a 
+                    href="/login" 
+                    className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-space-purple/20 transition-colors"
+                    onClick={() => setOpen(false)}
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span className="text-sm">Logout</span>
-                  </button>
-                )}
+                    <Settings className="w-4 h-4" />
+                    <span className="text-sm">Configurações</span>
+                  </a>
+                  
+                  {isLoggedIn ? (
+                    <button 
+                      onClick={() => {
+                        onLogout();
+                        setOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-space-purple/20 transition-colors text-red-400 w-full text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="text-sm">Sair</span>
+                    </button>
+                  ) : (
+                    <a 
+                      href="/login" 
+                      className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-space-purple/20 transition-colors"
+                      onClick={() => setOpen(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">Entrar / Cadastrar</span>
+                    </a>
+                  )}
+                </div>
               </nav>
               
               <div className="mt-8 px-4">
@@ -136,8 +220,8 @@ const UserMenu: React.FC<UserMenuProps> = ({
             <ul className="text-muted-foreground list-disc list-inside">
               <li>Arraste para girar</li>
               <li>Use o scroll para ampliar</li>
-              <li>Clique no Rio de Janeiro para ver lugares</li>
-              <li>Clique em outros marcadores para ver notícias</li>
+              <li>Clique nas cidades para ver lugares</li>
+              <li>Clique nos países para ver notícias</li>
             </ul>
           </div>
         )}
