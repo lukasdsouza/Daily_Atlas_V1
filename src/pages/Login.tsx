@@ -1,185 +1,212 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import StarsBackground from "@/components/StarsBackground";
-import { Globe, ChevronRight, LogIn, CheckCircle2 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { countries, Country } from "@/data/countries";
+import { Check, X, Globe } from "lucide-react";
+import { toast } from "sonner";
+import StarsBackground from "@/components/StarsBackground";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<"welcome" | "selectCountries">("welcome");
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  
-  const handleGoogleLogin = () => {
-    setIsLoggingIn(true);
+  const [email, setEmail] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const storedCountries = localStorage.getItem('preferredCountries');
+    if (storedCountries) {
+      try {
+        const parsed = JSON.parse(storedCountries);
+        if (parsed.length > 0) {
+          setIsLoggedIn(true);
+        }
+      } catch (e) {
+        console.error("Failed to parse stored countries", e);
+      }
+    }
+  }, []);
+
+  const handleCountrySelect = (country: Country) => {
+    const isSelected = selectedCountries.some(c => c.id === country.id);
     
-    // Simulate login delay
-    setTimeout(() => {
-      toast.success("Successfully logged in!");
-      setIsLoggingIn(false);
-      setStep("selectCountries");
-    }, 1500);
-  };
-  
-  const toggleCountry = (country: Country) => {
-    if (selectedCountries.some(c => c.id === country.id)) {
+    if (isSelected) {
       setSelectedCountries(selectedCountries.filter(c => c.id !== country.id));
     } else {
-      // Limit to maximum 5 countries
       if (selectedCountries.length < 5) {
         setSelectedCountries([...selectedCountries, country]);
       } else {
-        toast.warning("You can select up to 5 countries of interest");
+        toast.error("Você pode selecionar até 5 países");
       }
     }
   };
-  
-  const handleContinue = () => {
+
+  const handleLogin = () => {
     if (selectedCountries.length === 0) {
-      toast.warning("Please select at least one country of interest");
+      toast.error("Selecione pelo menos um país");
       return;
     }
-    
-    // Store selected countries in localStorage
+
+    if (!email) {
+      toast.error("Digite seu email");
+      return;
+    }
+
+    // In a real app, we would send this to a server
+    // For now, just store in localStorage
     localStorage.setItem('preferredCountries', JSON.stringify(selectedCountries));
     
-    toast.success("Preferences saved! Redirecting to dashboard...");
+    toast.success("Login realizado com sucesso!");
+    navigate('/');
+  };
+
+  // Mock Google login
+  const handleGoogleLogin = () => {
+    // In a real app, we would use OAuth
+    setEmail('user@example.com');
+    toast.success("Login com Google realizado com sucesso!");
     
-    // Navigate to main app
+    // Give a brief moment to show the toast
     setTimeout(() => {
-      navigate('/');
+      setIsLoggedIn(true);
     }, 1000);
   };
-  
+
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
       <StarsBackground />
       
-      <div className="absolute top-0 left-0 w-full p-6">
-        <div className="flex items-center gap-2">
-          <Globe className="w-8 h-8 text-space-bright" />
-          <h1 className="text-2xl font-title text-white">Daily Atlas</h1>
-        </div>
+      <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+        <div className="h-[400px] w-[400px] rounded-full bg-space-purple/5 blur-[100px]"></div>
       </div>
       
-      <div className="flex flex-1 items-center justify-center">
-        <div className="glassmorphism max-w-md w-full p-6 animate-in fade-in">
-          {step === "welcome" ? (
-            <>
-              <div className="flex items-center justify-center mb-6">
-                <div className="h-20 w-20 bg-space-purple/30 rounded-full flex items-center justify-center">
-                  <Globe className="h-12 w-12 text-space-bright" />
-                </div>
+      <div className="w-full max-w-md z-10">
+        {!isLoggedIn ? (
+          <Card className="glassmorphism border-space-purple/30">
+            <CardHeader className="text-center pb-2">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-space-purple to-space-bright rounded-full flex items-center justify-center mb-2">
+                <Globe className="h-8 w-8 text-white" />
               </div>
-              
-              <h2 className="text-2xl font-title text-center text-white mb-2">Welcome to Daily Atlas</h2>
-              <p className="text-muted-foreground text-sm text-center mb-8">
-                Your interactive gateway to global news and information
-              </p>
-              
-              <div className="space-y-4">
-                <Button 
-                  className="w-full bg-gradient-to-r from-space-purple to-space-bright hover:opacity-90 transition-opacity text-white"
-                  size="lg"
+              <CardTitle className="text-space-bright text-2xl font-title">Daily Atlas</CardTitle>
+              <CardDescription>Entre para acompanhar as notícias de seus países favoritos</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <button
                   onClick={handleGoogleLogin}
-                  disabled={isLoggingIn}
+                  className="w-full flex items-center justify-center gap-2 p-2 rounded-lg border border-space-purple/30 hover:bg-space-dark/30 transition-colors"
                 >
-                  {isLoggingIn ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Logging in...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <LogIn className="h-4 w-4" />
-                      Sign in with Google
-                    </span>
-                  )}
-                </Button>
-                
-                <div className="flex items-center gap-2">
-                  <hr className="flex-1 border-space-purple/30" />
-                  <span className="text-xs text-muted-foreground">or</span>
-                  <hr className="flex-1 border-space-purple/30" />
-                </div>
-                
-                <Button 
-                  className="w-full"
-                  variant="outline"
-                  onClick={() => navigate('/')}
-                >
-                  Continue as Guest
-                </Button>
+                  <svg className="h-5 w-5" viewBox="0 0 24 24">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                  Entrar com Google
+                </button>
               </div>
-            </>
-          ) : (
-            <>
-              <h2 className="text-xl font-title text-white mb-1">Select Your Interests</h2>
-              <p className="text-muted-foreground text-sm mb-6">
-                Choose up to 5 countries you'd like to follow for news updates
-              </p>
               
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[300px] overflow-y-auto custom-scrollbar">
-                  {countries.map(country => (
-                    <button
-                      key={country.id}
-                      onClick={() => toggleCountry(country)}
-                      className={`
-                        text-sm py-2 px-3 rounded-lg flex items-center gap-1 transition-colors relative
-                        ${selectedCountries.some(c => c.id === country.id) 
-                          ? "bg-space-purple text-white" 
-                          : "bg-space-dark/50 text-white hover:bg-space-purple/40"}
-                      `}
-                    >
-                      {country.name}
-                      {selectedCountries.some(c => c.id === country.id) && (
-                        <CheckCircle2 className="h-4 w-4 absolute right-2" />
-                      )}
-                    </button>
-                  ))}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-space-purple/30"></span>
                 </div>
-                
-                <div className="pt-4 border-t border-space-purple/30">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm text-muted-foreground">
-                      {selectedCountries.length} of 5 selected
-                    </span>
-                    {selectedCountries.length > 0 && (
-                      <button 
-                        className="text-xs text-space-bright hover:underline"
-                        onClick={() => setSelectedCountries([])}
-                      >
-                        Clear all
-                      </button>
-                    )}
-                  </div>
-                  
-                  <Button 
-                    className="w-full bg-gradient-to-r from-space-purple to-space-bright hover:opacity-90 transition-opacity"
-                    onClick={handleContinue}
-                  >
-                    <span className="flex items-center gap-1">
-                      Continue to Dashboard
-                      <ChevronRight className="h-4 w-4" />
-                    </span>
-                  </Button>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">ou continue por email</span>
                 </div>
               </div>
-            </>
-          )}
-        </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-space-bright">
+                  Email
+                </label>
+                <input 
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2 rounded-lg border border-space-purple/30 bg-card/50 focus:border-space-bright outline-none transition-colors"
+                  placeholder="seu@email.com"
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-4">
+              <div className="w-full">
+                <h3 className="text-sm font-medium text-space-bright mb-2">Selecione seus países de interesse (até 5)</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[180px] overflow-y-auto custom-scrollbar">
+                  {countries.map((country) => {
+                    const isSelected = selectedCountries.some(c => c.id === country.id);
+                    return (
+                      <button
+                        key={country.id}
+                        onClick={() => handleCountrySelect(country)}
+                        className={`px-3 py-2 rounded-lg flex items-center justify-between transition-all text-left ${
+                          isSelected 
+                            ? "bg-space-bright/20 border border-space-bright/40" 
+                            : "bg-space-dark/20 border border-space-purple/20 hover:bg-space-dark/40"
+                        }`}
+                      >
+                        <span className="text-sm truncate">{country.name}</span>
+                        {isSelected ? (
+                          <Check className="h-4 w-4 text-space-bright" />
+                        ) : (
+                          <span className="h-4 w-4 rounded-full border border-space-purple/40"></span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <button
+                onClick={handleLogin}
+                className="w-full py-2 bg-gradient-to-r from-space-purple to-space-bright rounded-lg hover:opacity-90 transition-opacity text-white"
+              >
+                Entrar
+              </button>
+            </CardFooter>
+          </Card>
+        ) : (
+          <Card className="glassmorphism border-space-purple/30">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-16 h-16 bg-green-500/30 rounded-full flex items-center justify-center mb-2">
+                <Check className="h-8 w-8 text-green-500" />
+              </div>
+              <CardTitle className="text-space-bright text-2xl">Você já está logado!</CardTitle>
+              <CardDescription>Você pode retornar à página principal ou sair da sua conta</CardDescription>
+            </CardHeader>
+            <CardFooter className="flex justify-between gap-4">
+              <button
+                onClick={() => {
+                  localStorage.removeItem('preferredCountries');
+                  setIsLoggedIn(false);
+                  toast.success("Logout realizado com sucesso!");
+                }}
+                className="flex-1 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-400 flex items-center justify-center gap-1"
+              >
+                <X className="h-4 w-4" /> Sair
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="flex-1 py-2 bg-gradient-to-r from-space-purple to-space-bright rounded-lg hover:opacity-90 transition-opacity text-white"
+              >
+                Continuar
+              </button>
+            </CardFooter>
+          </Card>
+        )}
       </div>
-      
-      <footer className="text-center text-muted-foreground text-xs py-4">
-        <p>Daily Atlas &copy; {new Date().getFullYear()}</p>
-      </footer>
     </div>
   );
 };

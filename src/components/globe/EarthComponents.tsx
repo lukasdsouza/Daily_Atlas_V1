@@ -66,15 +66,15 @@ export const AnimatedClouds = ({ cloudMap }: { cloudMap: THREE.Texture }) => {
   );
 };
 
-// Enhanced Pulse effect for selected country
-export const PulseMarker = () => {
+// Enhanced Pulse effect for selected country with customizable color
+export const PulseMarker = ({ color = "#33C3F0", size = 1 }: { color?: string, size?: number }) => {
   const pulseRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
   
   useFrame(({ clock }) => {
     if (pulseRef.current && ringRef.current) {
       const time = clock.getElapsedTime();
-      const scale = 1 + Math.sin(time * 3) * 0.3;
+      const scale = (1 + Math.sin(time * 3) * 0.3) * size;
       pulseRef.current.scale.set(scale, scale, scale);
       
       // Adjust opacity based on scale
@@ -84,7 +84,7 @@ export const PulseMarker = () => {
       }
       
       // Animate ring
-      const ringScale = 1 + Math.sin(time * 3 + 1) * 0.3; // Offset phase
+      const ringScale = (1 + Math.sin(time * 3 + 1) * 0.3) * size; // Offset phase
       ringRef.current.scale.set(ringScale, ringScale, ringScale);
       
       if (ringRef.current.material instanceof THREE.Material) {
@@ -99,10 +99,10 @@ export const PulseMarker = () => {
       <mesh ref={pulseRef}>
         <sphereGeometry args={[0.06, 16, 16]} />
         <meshStandardMaterial
-          color="#33C3F0"
+          color={color}
           transparent={true}
           opacity={0.5}
-          emissive="#33C3F0"
+          emissive={color}
           emissiveIntensity={0.5}
         />
       </mesh>
@@ -110,10 +110,10 @@ export const PulseMarker = () => {
       <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.06, 0.08, 16]} />
         <meshStandardMaterial
-          color="#33C3F0"
+          color={color}
           transparent={true}
           opacity={0.4}
-          emissive="#33C3F0"
+          emissive={color}
           emissiveIntensity={0.3}
           side={THREE.DoubleSide}
         />

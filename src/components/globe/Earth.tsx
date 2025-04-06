@@ -1,7 +1,7 @@
 
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";  // Fixed: import from drei instead of fiber
+import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { Country } from "@/data/countries";
 import { latLongToVector3 } from "@/utils/globeUtils";
@@ -36,16 +36,25 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
   const markers = countries.map((country) => {
     const position = latLongToVector3(country.latitude, country.longitude, 1.02);
     const isSelected = selectedCountry?.id === country.id;
+    const isRio = country.id === "rio";
+    
+    // Special larger marker for Rio de Janeiro
+    const markerSize = isRio ? 0.04 : 0.025;
+    const ringSize = isRio ? [0.05, 0.06] : [0.035, 0.045];
+    const glowSize = isRio ? 0.08 : 0.05;
+    const markerColor = isRio ? "#33FFD0" : (isSelected ? "#33C3F0" : "#9b87f5");
+    const emissiveColor = isRio ? "#33FFD0" : (isSelected ? "#33C3F0" : "#6E59A5");
+    const emissiveIntensity = isRio ? 3 : (isSelected ? 2 : 0.5);
     
     return (
       <group key={country.id} position={position} onClick={() => onCountrySelect(country)}>
         {/* Base marker for all countries */}
         <mesh>
-          <sphereGeometry args={[0.025, 16, 16]} />
+          <sphereGeometry args={[markerSize, 16, 16]} />
           <meshStandardMaterial 
-            color={isSelected ? "#33C3F0" : "#9b87f5"} 
-            emissive={isSelected ? "#33C3F0" : "#6E59A5"}
-            emissiveIntensity={isSelected ? 2 : 0.5}
+            color={markerColor} 
+            emissive={emissiveColor}
+            emissiveIntensity={emissiveIntensity}
             metalness={0.5}
             roughness={0.2}
           />
@@ -53,10 +62,10 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
         
         {/* Ring around marker */}
         <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[0.035, 0.045, 16]} />
+          <ringGeometry args={[ringSize[0], ringSize[1], 16]} />
           <meshStandardMaterial 
-            color={isSelected ? "#33C3F0" : "#9b87f5"} 
-            emissive={isSelected ? "#33C3F0" : "#6E59A5"}
+            color={markerColor} 
+            emissive={emissiveColor}
             transparent={true}
             opacity={0.7}
             side={THREE.DoubleSide}
@@ -65,9 +74,9 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
         
         {/* Glow effect */}
         <mesh>
-          <sphereGeometry args={[0.05, 16, 16]} />
+          <sphereGeometry args={[glowSize, 16, 16]} />
           <meshStandardMaterial
-            color={isSelected ? "#33C3F0" : "#9b87f5"}
+            color={markerColor}
             transparent={true}
             opacity={0.3}
           />
@@ -75,25 +84,26 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
         
         {/* Light point */}
         <pointLight 
-          color={isSelected ? "#33C3F0" : "#9b87f5"} 
-          intensity={isSelected ? 0.5 : 0.2} 
-          distance={0.3}
+          color={markerColor} 
+          intensity={isRio ? 0.8 : (isSelected ? 0.5 : 0.2)} 
+          distance={isRio ? 0.5 : 0.3}
+          decay={2}
         />
         
-        {/* Add pulse effect for selected country */}
-        {isSelected && (
-          <PulseMarker />
+        {/* Add pulse effect for Rio or selected country */}
+        {(isSelected || isRio) && (
+          <PulseMarker color={markerColor} size={isRio ? 1.5 : 1} />
         )}
         
-        {/* Add vertical beam for selected country */}
-        {isSelected && (
+        {/* Add vertical beam for Rio or selected country */}
+        {(isSelected || isRio) && (
           <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.01, 0.01, 0.3, 8]} />
+            <cylinderGeometry args={[0.01, 0.01, isRio ? 0.5 : 0.3, 8]} />
             <meshStandardMaterial 
-              color="#33C3F0" 
+              color={markerColor} 
               transparent={true} 
               opacity={0.5}
-              emissive="#33C3F0"
+              emissive={markerColor}
             />
           </mesh>
         )}
