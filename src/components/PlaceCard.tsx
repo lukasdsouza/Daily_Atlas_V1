@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, MapPin, Clock, DollarSign, CalendarDays, Users, MapPinOff } from "lucide-react";
-import { Place } from "@/data/countries";
+import { Place } from "@/data/neighborhoods";
 
 interface PlaceCardProps {
   place: Place;
@@ -52,7 +52,7 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, onClick }) => {
 
   return (
     <Card 
-      className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full cursor-pointer hover:scale-[1.02] border-space-purple/30 bg-card/40 backdrop-blur-md"
+      className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full cursor-pointer hover:scale-[1.02] border-gray-200 bg-white backdrop-blur-md"
       onClick={onClick}
     >
       <div className="h-36 overflow-hidden">
@@ -65,13 +65,13 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, onClick }) => {
       </div>
       <CardHeader className="p-4 pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-lg font-bold text-space-bright">{place.name}</CardTitle>
-          <span className="px-2 py-1 text-xs rounded-full bg-space-purple/40 text-white flex items-center gap-1">
+          <CardTitle className="text-lg font-bold text-gray-800">{place.name}</CardTitle>
+          <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 flex items-center gap-1">
             {getTypeIcon()}
             {place.type.charAt(0).toUpperCase() + place.type.slice(1)}
           </span>
         </div>
-        <CardDescription className="text-sm line-clamp-2 text-muted-foreground">
+        <CardDescription className="text-sm line-clamp-2 text-gray-600">
           {place.description}
         </CardDescription>
       </CardHeader>
@@ -79,35 +79,35 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, onClick }) => {
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <div className="flex mr-1">{renderStars(place.rating)}</div>
-            <span className="text-sm font-semibold text-white">{place.rating.toFixed(1)}</span>
+            <span className="text-sm font-semibold text-gray-700">{place.rating.toFixed(1)}</span>
           </div>
           {place.price && (
-            <div className="text-sm text-muted-foreground">{formatPrice(place.price)}</div>
+            <div className="text-sm text-gray-600">{formatPrice(place.price)}</div>
           )}
         </div>
         
         {/* Exibir bairro */}
         {place.neighborhood && (
-          <div className="flex items-center gap-1 text-xs font-medium bg-amber-500/20 rounded-full px-2 py-1 mb-2 text-amber-300">
+          <div className="flex items-center gap-1 text-xs font-medium bg-amber-100 rounded-full px-2 py-1 mb-2 text-amber-700">
             <MapPin className="h-3 w-3" />
             <span>{place.neighborhood}</span>
           </div>
         )}
         
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1 text-xs text-gray-600">
           <MapPinOff className="h-3 w-3" />
           <span className="truncate">{place.address}</span>
         </div>
         {place.openingHours && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+          <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
             <Clock className="h-3 w-3" />
             <span>{place.openingHours}</span>
           </div>
         )}
       </CardContent>
-      <CardFooter className="p-4 pt-2 border-t border-space-purple/20">
+      <CardFooter className="p-4 pt-2 border-t border-gray-100">
         <div className="w-full">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-gray-500">
             {place.reviews.length} avaliações
           </p>
         </div>

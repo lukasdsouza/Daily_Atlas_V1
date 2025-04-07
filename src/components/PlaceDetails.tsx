@@ -1,7 +1,7 @@
 
 import React from "react";
 import { X, Star, MapPin, Clock, DollarSign, User, Calendar } from "lucide-react";
-import { Place } from "@/data/countries";
+import { Place } from "@/data/neighborhoods";
 import { toast } from "sonner";
 
 interface PlaceDetailsProps {
@@ -46,7 +46,7 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({ place, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto" onClick={onClose}></div>
       
-      <div className="glassmorphism w-full max-w-xl max-h-[80vh] overflow-hidden flex flex-col relative z-10 animate-in fade-in pointer-events-auto shadow-lg shadow-space-bright/20">
+      <div className="bg-white/95 backdrop-blur-md w-full max-w-xl max-h-[80vh] overflow-hidden flex flex-col relative z-10 animate-in fade-in pointer-events-auto shadow-lg rounded-xl">
         <div className="h-48 overflow-hidden relative">
           <div 
             className="w-full h-full bg-cover bg-center" 
@@ -79,25 +79,25 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({ place, onClose }) => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               {place.type === "nightclub" && (
-                <span className="px-2 py-1 text-xs rounded-full bg-purple-500/20 text-purple-300">Balada</span>
+                <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">Balada</span>
               )}
               {place.type === "restaurant" && (
-                <span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-300">Restaurante</span>
+                <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Restaurante</span>
               )}
               {place.type === "tourist" && (
-                <span className="px-2 py-1 text-xs rounded-full bg-blue-500/20 text-blue-300">Ponto Turístico</span>
+                <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Ponto Turístico</span>
               )}
               {place.type === "event" && (
-                <span className="px-2 py-1 text-xs rounded-full bg-red-500/20 text-red-300">Evento</span>
+                <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Evento</span>
               )}
               {place.price && (
-                <span className="flex items-center text-muted-foreground">
+                <span className="flex items-center text-gray-700">
                   <DollarSign className="h-4 w-4 mr-1" />
                   {place.price}
                 </span>
               )}
               {place.openingHours && (
-                <span className="flex items-center text-muted-foreground">
+                <span className="flex items-center text-gray-700">
                   <Clock className="h-4 w-4 mr-1" />
                   {place.openingHours}
                 </span>
@@ -106,13 +106,13 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({ place, onClose }) => {
             <div className="flex gap-2">
               <button 
                 onClick={handleBookmark} 
-                className="px-3 py-1.5 text-xs bg-space-purple/30 hover:bg-space-purple/50 rounded-full text-white transition-colors"
+                className="px-3 py-1.5 text-xs bg-blue-100 hover:bg-blue-200 rounded-full text-blue-700 transition-colors"
               >
                 Salvar
               </button>
               <button 
                 onClick={handleShare} 
-                className="px-3 py-1.5 text-xs bg-space-bright/30 hover:bg-space-bright/50 rounded-full text-white transition-colors"
+                className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
               >
                 Compartilhar
               </button>
@@ -120,23 +120,23 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({ place, onClose }) => {
           </div>
           
           <div className="mb-6">
-            <h3 className="text-md font-semibold text-space-bright mb-2">Sobre</h3>
-            <p className="text-muted-foreground">{place.description}</p>
+            <h3 className="text-md font-semibold text-gray-900 mb-2">Sobre</h3>
+            <p className="text-gray-700">{place.description}</p>
           </div>
           
           <div>
-            <h3 className="text-md font-semibold text-space-bright mb-2">Avaliações</h3>
+            <h3 className="text-md font-semibold text-gray-900 mb-2">Avaliações</h3>
             <div className="space-y-4">
               {place.reviews.map((review, idx) => (
-                <div key={idx} className="cosmos-card">
+                <div key={idx} className="bg-gray-50 p-3 rounded-lg">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-space-purple/30 flex items-center justify-center">
-                        <User className="h-4 w-4 text-space-bright" />
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <User className="h-4 w-4 text-blue-700" />
                       </div>
                       <div>
-                        <p className="font-medium text-space-bright">{review.user}</p>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <p className="font-medium text-gray-900">{review.user}</p>
+                        <div className="flex items-center gap-1 text-xs text-gray-600">
                           <Calendar className="h-3 w-3" />
                           <span>{formatDate(review.date)}</span>
                         </div>
@@ -144,10 +144,10 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({ place, onClose }) => {
                     </div>
                     <div className="flex items-center">
                       <div className="flex mr-1">{renderStars(review.rating)}</div>
-                      <span className="text-sm font-medium text-space-bright">{review.rating.toFixed(1)}</span>
+                      <span className="text-sm font-medium text-gray-900">{review.rating.toFixed(1)}</span>
                     </div>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
+                  <p className="mt-2 text-sm text-gray-700">{review.comment}</p>
                 </div>
               ))}
             </div>

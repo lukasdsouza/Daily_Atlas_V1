@@ -2,88 +2,52 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import GlobeViewer, { Country, countries } from "@/components/GlobeViewer";
-import NewsPanel from "@/components/NewsPanel";
-import StarsBackground from "@/components/StarsBackground";
-import PlaceDetails from "@/components/PlaceDetails";
+import RioViewer from "@/components/RioViewer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { toast } from "sonner";
-import { rioPlaces, Place, getPlacesByCity } from "@/data/countries";
+import { Place, Neighborhood, neighborhoods, getPlacesByNeighborhood } from "@/data/neighborhoods";
 import UserMenu from "@/components/UserMenu";
-import CountryInfo from "@/components/CountryInfo";
+import NeighborhoodInfo from "@/components/NeighborhoodInfo";
 import PlacesExplorer from "@/components/PlacesExplorer";
+import PlaceDetails from "@/components/PlaceDetails";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<Neighborhood | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  const [showInfo, setShowInfo] = useState(false);
   const [showPlaces, setShowPlaces] = useState(false);
   const [activePlaceFilter, setActivePlaceFilter] = useState<'all' | 'tourist' | 'restaurant' | 'nightclub' | 'event'>('all');
-  const [preferredCountries, setPreferredCountries] = useState<Country[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedContinent, setSelectedContinent] = useState("Todos");
-  const [currentPlaces, setCurrentPlaces] = useState<Place[]>(rioPlaces);
+  const [currentPlaces, setCurrentPlaces] = useState<Place[]>([]);
 
-  // Auto-select Rio de Janeiro on initial load
+  // Verificar status de login
   useEffect(() => {
-    const rio = countries.find(country => country.id === "rio");
-    if (rio) {
-      setSelectedCountry(rio);
-      setShowPlaces(true);
-      toast(`Explorando ${rio.name}`, {
-        icon: "🏖️",
-      });
-    }
+    const isLoggedInUser = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(isLoggedInUser);
   }, []);
 
-  // Check for login status and preferred countries
-  useEffect(() => {
-    const storedCountries = localStorage.getItem('preferredCountries');
-    if (storedCountries) {
-      try {
-        const parsed = JSON.parse(storedCountries);
-        setPreferredCountries(parsed);
-        setIsLoggedIn(true);
-      } catch (e) {
-        console.error("Falha ao analisar países preferidos", e);
-      }
-    }
-  }, []);
-
-  const handleCountrySelect = (country: Country) => {
-    // Permitir apenas Rio de Janeiro
-    if (country.id === "rio") {
-      toast(`Explorando ${country.name}`, {
-        icon: "🌎",
-      });
-      setSelectedCountry(country);
-      
-      // Mostrar painel de lugares se for Rio
-      const places = getPlacesByCity(country.id);
-      setCurrentPlaces(places);
-      setShowPlaces(true);
-    } else {
-      toast.error("Apenas o Rio de Janeiro está disponível para exploração detalhada", {
-        icon: "🚫",
-      });
-    }
+  const handleNeighborhoodSelect = (neighborhood: Neighborhood) => {
+    setSelectedNeighborhood(neighborhood);
+    
+    // Buscar lugares no bairro selecionado
+    const places = getPlacesByNeighborhood(neighborhood.id);
+    setCurrentPlaces(places);
+    setShowPlaces(true);
+    
+    toast.success(`Explorando ${neighborhood.name}`, {
+      icon: "🏙️",
+    });
   };
   
   const handleLogout = () => {
-    localStorage.removeItem('preferredCountries');
-    setPreferredCountries([]);
+    localStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
     toast.success("Desconectado com sucesso");
     navigate('/login');
   };
 
-  const isSelectedCityWithPlaces = selectedCountry?.isCity && selectedCountry.id === "rio";
-
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <StarsBackground />
-      
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-blue-50 to-white">
       <Header />
       
       <main className="max-w-full mx-auto h-[calc(100vh-80px)]">
@@ -91,23 +55,16 @@ const Index = () => {
           <ErrorBoundary>
             <div className="w-full h-full relative flex-grow">
               <UserMenu 
-                showInfo={showInfo}
-                setShowInfo={setShowInfo}
                 isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
-                selectedContinent={selectedContinent}
-                setSelectedContinent={setSelectedContinent}
-                onCountrySelect={handleCountrySelect}
-                countries={countries}
-                selectedCountry={selectedCountry}
               />
               
-              <GlobeViewer 
-                onCountrySelect={handleCountrySelect} 
-                selectedCountry={selectedCountry}
+              <RioViewer 
+                onNeighborhoodSelect={handleNeighborhoodSelect} 
+                selectedNeighborhood={selectedNeighborhood}
               />
               
-              <CountryInfo selectedCountry={selectedCountry} />
+              <NeighborhoodInfo selectedNeighborhood={selectedNeighborhood} />
             </div>
           </ErrorBoundary>
           
@@ -118,21 +75,14 @@ const Index = () => {
             setActivePlaceFilter={setActivePlaceFilter}
             places={currentPlaces}
             onPlaceSelect={setSelectedPlace}
-            isRio={isSelectedCityWithPlaces}
+            selectedNeighborhoodId={selectedNeighborhood?.id || null}
           />
         </div>
       </main>
       
-      <footer className="text-center text-muted-foreground text-xs absolute bottom-2 w-full opacity-50 hover:opacity-100 transition-opacity">
-        <p>Daily Atlas &copy; {new Date().getFullYear()}</p>
+      <footer className="text-center text-gray-500 text-xs absolute bottom-2 w-full opacity-50 hover:opacity-100 transition-opacity">
+        <p>Rio Explorer &copy; {new Date().getFullYear()}</p>
       </footer>
-      
-      {selectedCountry && !selectedCountry.isCity && (
-        <NewsPanel 
-          country={selectedCountry} 
-          onClose={() => setSelectedCountry(null)} 
-        />
-      )}
       
       {selectedPlace && (
         <PlaceDetails 
