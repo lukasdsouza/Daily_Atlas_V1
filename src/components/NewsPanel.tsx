@@ -1,7 +1,6 @@
 
 import React from "react";
 import { X } from "lucide-react";
-import RioViewer from "./RioViewer";
 
 // Define the Article interface locally since it's not exported from countries.ts
 interface Article {

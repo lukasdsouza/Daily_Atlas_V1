@@ -22,8 +22,9 @@ const Index = () => {
   const [showInfo, setShowInfo] = useState(true);
   const [selectedContinent, setSelectedContinent] = useState("Todos");
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [countries, setCountries] = useState([]);
 
-  // Verificar status de login
+  // Check login status
   useEffect(() => {
     const isLoggedInUser = localStorage.getItem('isLoggedIn') === 'true';
     setIsLoggedIn(isLoggedInUser);
@@ -32,7 +33,7 @@ const Index = () => {
   const handleNeighborhoodSelect = (neighborhood: Neighborhood) => {
     setSelectedNeighborhood(neighborhood);
     
-    // Buscar lugares no bairro selecionado
+    // Get places in the selected neighborhood
     const places = getPlacesByNeighborhood(neighborhood.id);
     setCurrentPlaces(places);
     setShowPlaces(true);
@@ -47,6 +48,10 @@ const Index = () => {
     setIsLoggedIn(false);
     toast.success("Desconectado com sucesso");
     navigate('/login');
+  };
+
+  const handleCountrySelect = () => {
+    // Placeholder function to satisfy UserMenu props
   };
 
   return (
@@ -64,8 +69,8 @@ const Index = () => {
                 setShowInfo={setShowInfo}
                 selectedContinent={selectedContinent}
                 setSelectedContinent={setSelectedContinent}
-                onCountrySelect={() => {}}
-                countries={[]}
+                onCountrySelect={handleCountrySelect}
+                countries={countries}
                 selectedCountry={selectedCountry}
               />
               
