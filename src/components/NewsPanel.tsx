@@ -1,8 +1,15 @@
 
 import React from "react";
 import { X } from "lucide-react";
-import { Article } from "../data/countries";
-import RioViewer from "./RioViewer";  // Updated import
+import RioViewer from "./RioViewer";
+
+// Define the Article interface locally since it's not exported from countries.ts
+interface Article {
+  title: string;
+  summary: string;
+  source: string;
+  date: string;
+}
 
 interface NewsPanelProps {
   articles: Article[];
@@ -38,7 +45,7 @@ const NewsPanel: React.FC<NewsPanelProps> = ({ articles, onClose }) => {
               ))}
             </div>
           ) : (
-            <p className="text-center py-8 text-gray-500">Nenhuma notícia encontrada para este país.</p>
+            <p className="text-center py-8 text-gray-500">Nenhuma notícia encontrada para este bairro.</p>
           )}
         </div>
       </div>

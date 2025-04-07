@@ -10,7 +10,6 @@ import UserMenu from "@/components/UserMenu";
 import NeighborhoodInfo from "@/components/NeighborhoodInfo";
 import PlacesExplorer from "@/components/PlacesExplorer";
 import PlaceDetails from "@/components/PlaceDetails";
-import { continents, Country, countries } from "@/data/countries";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ const Index = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Place[]>([]);
   const [showInfo, setShowInfo] = useState(true);
   const [selectedContinent, setSelectedContinent] = useState("Todos");
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   // Verificar status de login
   useEffect(() => {
@@ -50,10 +49,6 @@ const Index = () => {
     navigate('/login');
   };
 
-  const handleCountrySelect = (country: Country) => {
-    setSelectedCountry(country);
-  };
-
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-blue-50 to-white">
       <Header />
@@ -69,8 +64,8 @@ const Index = () => {
                 setShowInfo={setShowInfo}
                 selectedContinent={selectedContinent}
                 setSelectedContinent={setSelectedContinent}
-                onCountrySelect={handleCountrySelect}
-                countries={countries}
+                onCountrySelect={() => {}}
+                countries={[]}
                 selectedCountry={selectedCountry}
               />
               
@@ -96,7 +91,7 @@ const Index = () => {
       </main>
       
       <footer className="text-center text-gray-500 text-xs absolute bottom-2 w-full opacity-50 hover:opacity-100 transition-opacity">
-        <p>Rio Explorer &copy; {new Date().getFullYear()}</p>
+        <p>Olhos do Rio &copy; {new Date().getFullYear()}</p>
       </footer>
       
       {selectedPlace && (
