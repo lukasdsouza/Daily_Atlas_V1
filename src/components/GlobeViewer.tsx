@@ -19,6 +19,7 @@ const GlobeViewer: React.FC<GlobeViewerProps> = ({ onCountrySelect, selectedCoun
         onCountrySelect={onCountrySelect} 
         selectedCountry={selectedCountry}
         countries={countries}
+        autoRotateToRio={true}
       />
       
       {selectedCountry && (

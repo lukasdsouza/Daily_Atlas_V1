@@ -1,6 +1,6 @@
 
 import React from "react";
-import { MapPin, Globe, Info } from "lucide-react";
+import { MapPin, Globe, Info, Navigation } from "lucide-react";
 import { Country } from "@/data/countries";
 
 interface CountryInfoProps {
@@ -24,6 +24,14 @@ const CountryInfo: React.FC<CountryInfoProps> = ({ selectedCountry }) => {
           <div>
             <h3 className="font-bold text-lg">{selectedCountry.name}</h3>
             <p className="text-sm text-space-bright/90 mt-1">{selectedCountry.description}</p>
+            {selectedCountry.id === "rio" && (
+              <div className="mt-2 p-2 bg-blue-500/20 rounded-lg">
+                <p className="text-xs flex items-center gap-1 text-blue-300">
+                  <Navigation className="h-3 w-3" />
+                  <span>Explore os bairros e atrações do Rio de Janeiro</span>
+                </p>
+              </div>
+            )}
             {selectedCountry.continent && (
               <p className="text-xs text-space-bright/70 mt-2 flex items-center gap-1">
                 <Globe className="h-3 w-3" />

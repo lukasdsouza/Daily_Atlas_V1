@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, MapPin, Clock, DollarSign, CalendarDays, Users } from "lucide-react";
+import { Star, MapPin, Clock, DollarSign, CalendarDays, Users, MapPinOff } from "lucide-react";
 import { Place } from "@/data/countries";
 
 interface PlaceCardProps {
@@ -59,7 +59,7 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, onClick }) => {
         <div 
           className="w-full h-full bg-cover bg-center" 
           style={{ 
-            backgroundImage: `url(https://source.unsplash.com/400x300/?${encodeURIComponent(place.name.toLowerCase())})`
+            backgroundImage: `url(https://source.unsplash.com/400x300/?${encodeURIComponent(place.name.toLowerCase()+',rio')})`
           }}
         />
       </div>
@@ -85,8 +85,17 @@ export const PlaceCard: React.FC<PlaceCardProps> = ({ place, onClick }) => {
             <div className="text-sm text-muted-foreground">{formatPrice(place.price)}</div>
           )}
         </div>
+        
+        {/* Exibir bairro */}
+        {place.neighborhood && (
+          <div className="flex items-center gap-1 text-xs font-medium bg-amber-500/20 rounded-full px-2 py-1 mb-2 text-amber-300">
+            <MapPin className="h-3 w-3" />
+            <span>{place.neighborhood}</span>
+          </div>
+        )}
+        
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="h-3 w-3" />
+          <MapPinOff className="h-3 w-3" />
           <span className="truncate">{place.address}</span>
         </div>
         {place.openingHours && (

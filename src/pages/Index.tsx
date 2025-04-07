@@ -30,6 +30,7 @@ const Index = () => {
     const rio = countries.find(country => country.id === "rio");
     if (rio) {
       setSelectedCountry(rio);
+      setShowPlaces(true);
       toast(`Explorando ${rio.name}`, {
         icon: "🏖️",
       });
@@ -51,18 +52,21 @@ const Index = () => {
   }, []);
 
   const handleCountrySelect = (country: Country) => {
-    toast(`Explorando ${country.name}`, {
-      icon: "🌎",
-    });
-    setSelectedCountry(country);
-    
-    // Mostrar painel de lugares se for uma cidade
-    if (country.isCity) {
+    // Permitir apenas Rio de Janeiro
+    if (country.id === "rio") {
+      toast(`Explorando ${country.name}`, {
+        icon: "🌎",
+      });
+      setSelectedCountry(country);
+      
+      // Mostrar painel de lugares se for Rio
       const places = getPlacesByCity(country.id);
       setCurrentPlaces(places);
       setShowPlaces(true);
     } else {
-      setShowPlaces(false);
+      toast.error("Apenas o Rio de Janeiro está disponível para exploração detalhada", {
+        icon: "🚫",
+      });
     }
   };
   
@@ -74,7 +78,7 @@ const Index = () => {
     navigate('/login');
   };
 
-  const isSelectedCityWithPlaces = selectedCountry?.isCity && getPlacesByCity(selectedCountry.id).length > 0;
+  const isSelectedCityWithPlaces = selectedCountry?.isCity && selectedCountry.id === "rio";
 
   return (
     <div className="min-h-screen relative overflow-hidden">
