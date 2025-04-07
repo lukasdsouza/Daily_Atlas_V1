@@ -1,7 +1,7 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { Text, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { Neighborhood, neighborhoods } from "@/data/neighborhoods";
 
@@ -20,6 +20,31 @@ const RioModel: React.FC<RioModelProps> = ({ onNeighborhoodSelect, selectedNeigh
   // Disable auto-rotation when user interacts with the model
   const autoRotate = useRef(true);
   
+  // Shape of Rio - creating a more complex path to mimic the actual geography
+  // This uses the coordinates from neighborhoods.ts but arranges them in a more geographical way
+  const rioShape = useMemo(() => {
+    // Create a base shape for Rio
+    const shape = new THREE.Shape();
+    
+    // Define the outline of Rio based on the extreme neighborhoods
+    // Starting point
+    shape.moveTo(-3, 0);
+    
+    // Top outline (north)
+    shape.bezierCurveTo(-2.5, 2, 0, 2.5, 2, 2);
+    
+    // Right outline (east)
+    shape.bezierCurveTo(3, 1.5, 3, 0, 2.5, -1);
+    
+    // Bottom outline (south)
+    shape.bezierCurveTo(2, -2, 0, -3, -2, -2.5);
+    
+    // Left outline (west)
+    shape.bezierCurveTo(-3, -2, -3.5, -1, -3, 0);
+    
+    return shape;
+  }, []);
+  
   // Smooth, slow animation
   useFrame((state, delta) => {
     if (rioRef.current && autoRotate.current) {
@@ -27,50 +52,54 @@ const RioModel: React.FC<RioModelProps> = ({ onNeighborhoodSelect, selectedNeigh
     }
   });
 
-  // Colors for different neighborhoods based on the reference image
+  // Colors for different neighborhoods
   const getNeighborhoodColor = (id: string, hovered: boolean = false, selected: boolean = false) => {
     if (selected) return "#f97316"; // Orange for selected
     if (hovered) return "#3b82f6"; // Blue for hover
     
-    // Colors based on the reference image (earthy tones and water)
-    switch (neighborhoods.find(n => n.id === id)?.zone) {
-      case "sul": return "#6fb179"; // Blue-green for coastal zone
-      case "norte": return "#b29b67"; // Earthy tones for north zone
-      case "oeste": return "#9d8844"; // Darker earthy tones for west zone
-      case "central": return "#78a399"; // Lighter blue-green for center
-      default: return "#909090"; // Gray for others
-    }
+    return "#ffffff"; // White as in the reference image
   };
 
-  // Height based on zone to create topographic effect
-  const getNeighborhoodHeight = (zone: string) => {
-    switch (zone) {
-      case "sul": return 0.15; // Lower height for coastal zone
-      case "norte": return 0.4; // Higher height for north zone (mountainous)
-      case "oeste": return 0.25; // Medium height for west zone
-      case "central": return 0.2; // Medium-low height for center
-      default: return 0.2;
-    }
+  // Height for 3D effect
+  const getNeighborhoodHeight = () => {
+    return 0.1; // Constant height for all neighborhoods to match reference image
   };
 
   return (
-    <group ref={rioRef} position={[0, -0.5, 0]}>
-      {/* Base of Rio (water/ocean) */}
+    <group ref={rioRef} position={[0, -0.5, 0]} rotation={[0, 0, 0]}>
+      {/* Base of Rio - light gray as in the reference image */}
       <mesh position={[0, -0.05, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[15, 15]} />
-        <meshStandardMaterial color="#3a8dc1" metalness={0.2} roughness={0.8} />
+        <meshStandardMaterial color="#d1d1d1" metalness={0.1} roughness={0.8} />
       </mesh>
 
-      {/* Neighborhoods of Rio */}
+      {/* Main Rio shape - this creates the entire landmass */}
+      <mesh position={[0, 0, 0]} rotation={[0, 0, 0]} castShadow receiveShadow>
+        <extrudeGeometry 
+          args={[
+            rioShape, 
+            { 
+              depth: 0.2, 
+              bevelEnabled: true, 
+              bevelThickness: 0.05, 
+              bevelSize: 0.05, 
+              bevelSegments: 3 
+            }
+          ]} 
+        />
+        <meshStandardMaterial color="#f0f0f0" metalness={0.1} roughness={0.7} />
+      </mesh>
+
+      {/* Individual neighborhoods of Rio */}
       {neighborhoods.map((neighborhood) => {
-        const height = getNeighborhoodHeight(neighborhood.zone);
         const isSelected = selectedNeighborhood?.id === neighborhood.id;
         const isHovered = hoveredNeighborhood === neighborhood.id;
+        const height = getNeighborhoodHeight();
         
         return (
           <group 
             key={neighborhood.id} 
-            position={[neighborhood.x, 0, neighborhood.z]}
+            position={[neighborhood.x, 0.21, neighborhood.z]} // Position slightly above the base
             onClick={(e) => {
               e.stopPropagation();
               autoRotate.current = false;
@@ -82,31 +111,38 @@ const RioModel: React.FC<RioModelProps> = ({ onNeighborhoodSelect, selectedNeigh
             }}
             onPointerOut={() => setHoveredNeighborhood(null)}
           >
-            {/* Neighborhood - represented with extruded shape for 3D effect */}
-            <mesh
+            {/* Neighborhood - with extruded border for 3D effect */}
+            <RoundedBox
+              args={[neighborhood.size * 0.9, height, neighborhood.size * 0.9]}
+              radius={0.05}
+              smoothness={4}
               castShadow
               receiveShadow
-              position={[0, height/2, 0]}
             >
-              <boxGeometry args={[neighborhood.size, height, neighborhood.size]} />
               <meshStandardMaterial 
-                color={getNeighborhoodColor(neighborhood.id, isHovered, isSelected)} 
+                color={getNeighborhoodColor(neighborhood.id, isHovered, isSelected)}
                 metalness={0.1}
-                roughness={0.8}
-                // Slightly raise the selected neighborhood
+                roughness={0.7}
                 emissive={isSelected ? "#ff4000" : isHovered ? "#4080ff" : "#000000"}
                 emissiveIntensity={isSelected ? 0.2 : isHovered ? 0.1 : 0}
               />
-            </mesh>
+            </RoundedBox>
             
+            {/* Border lines between neighborhoods */}
+            <lineSegments>
+              <edgesGeometry args={[new THREE.BoxGeometry(neighborhood.size * 0.9, height, neighborhood.size * 0.9)]} />
+              <lineBasicMaterial color="#999999" linewidth={1} />
+            </lineSegments>
+            
+            {/* Neighborhood name */}
             <Text
               position={[0, height + 0.15, 0]}
-              fontSize={0.18}
-              color="#ffffff"
+              fontSize={0.15}
+              color="#000000"
               anchorX="center"
               anchorY="middle"
               outlineWidth={0.02}
-              outlineColor="#000000"
+              outlineColor="#ffffff"
             >
               {neighborhood.name}
             </Text>

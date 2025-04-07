@@ -55,7 +55,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-gray-200 to-white">
       <Header />
       
       <main className="max-w-full mx-auto h-[calc(100vh-80px)]">
@@ -70,7 +70,7 @@ const Index = () => {
                 selectedContinent={selectedContinent}
                 setSelectedContinent={setSelectedContinent}
                 onCountrySelect={handleCountrySelect}
-                countries={countries}
+                countries={countries || []}
                 selectedCountry={selectedCountry}
               />
               

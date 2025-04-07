@@ -2,7 +2,7 @@
 import React from "react";
 import { X } from "lucide-react";
 
-// Define the Article interface locally since it's not exported from countries.ts
+// Define the Article interface locally
 interface Article {
   title: string;
   summary: string;
