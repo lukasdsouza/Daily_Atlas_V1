@@ -10,6 +10,7 @@ import UserMenu from "@/components/UserMenu";
 import NeighborhoodInfo from "@/components/NeighborhoodInfo";
 import PlacesExplorer from "@/components/PlacesExplorer";
 import PlaceDetails from "@/components/PlaceDetails";
+import { continents, Country, countries } from "@/data/countries";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ const Index = () => {
   const [activePlaceFilter, setActivePlaceFilter] = useState<'all' | 'tourist' | 'restaurant' | 'nightclub' | 'event'>('all');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPlaces, setCurrentPlaces] = useState<Place[]>([]);
+  const [showInfo, setShowInfo] = useState(true);
+  const [selectedContinent, setSelectedContinent] = useState("Todos");
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
   // Verificar status de login
   useEffect(() => {
@@ -46,6 +50,10 @@ const Index = () => {
     navigate('/login');
   };
 
+  const handleCountrySelect = (country: Country) => {
+    setSelectedCountry(country);
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-blue-50 to-white">
       <Header />
@@ -57,6 +65,13 @@ const Index = () => {
               <UserMenu 
                 isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
+                showInfo={showInfo}
+                setShowInfo={setShowInfo}
+                selectedContinent={selectedContinent}
+                setSelectedContinent={setSelectedContinent}
+                onCountrySelect={handleCountrySelect}
+                countries={countries}
+                selectedCountry={selectedCountry}
               />
               
               <RioViewer 

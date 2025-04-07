@@ -44,10 +44,10 @@ const UserMenu: React.FC<UserMenuProps> = ({
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   
-  // Filter countries by continent
-  const filteredCountries = selectedContinent === "Todos" 
+  // Filter countries by continent - now with null check
+  const filteredCountries = countries && selectedContinent === "Todos" 
     ? countries
-    : countries.filter(country => country.continent === selectedContinent);
+    : countries?.filter(country => country.continent === selectedContinent) || [];
   
   return (
     <>
