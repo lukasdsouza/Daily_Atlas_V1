@@ -16,13 +16,13 @@ interface GlobeProps {
 const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countries }) => {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load textures
+  // Load textures from more reliable CDN URLs
   const [earthMap, earthBump, earthSpec, earthNormal, cloudMap] = useTexture([
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg",
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg",
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_normal_2048.jpg",
-    "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png",
+    "https://assets.codepen.io/33787/earth_atmos_4k.jpg",
+    "https://assets.codepen.io/33787/earth_specular_2k.jpg",
+    "https://assets.codepen.io/33787/earth_specular_2k.jpg",
+    "https://assets.codepen.io/33787/earth_normal_2k.jpg",
+    "https://assets.codepen.io/33787/earth_clouds_1k.png",
   ]);
 
   // Auto-rotate but slower when no interaction
