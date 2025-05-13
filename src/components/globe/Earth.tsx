@@ -1,5 +1,5 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
@@ -18,9 +18,15 @@ interface GlobeProps {
  */
 const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countries }) => {
   const groupRef = useRef<THREE.Group>(null);
+  const [texturesLoaded, setTexturesLoaded] = useState(false);
+  const [textureError, setTextureError] = useState<string | null>(null);
   
-  // Load textures with proper error handling
-  const earthTextures = useTexture(
+  // Define fallback colors for when textures aren't available
+  const fallbackColor = new THREE.Color(0x1a33cc); // Deep blue
+  const fallbackCloudColor = new THREE.Color(0xffffff); // White
+  
+  // Try to load textures with proper error handling
+  const textures = useTexture(
     {
       map: '/textures/earth_daymap.jpg',
       bumpMap: '/textures/earth_bump.jpg',
@@ -28,14 +34,26 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
       normalMap: '/textures/earth_normal.jpg',
       cloudsMap: '/textures/earth_clouds.jpg',
     },
-    (textures) => {
-      console.log("Textures loaded successfully:", textures);
-    },
-    (error) => {
-      console.error("Error loading textures:", error);
+    (loadedTextures) => {
+      console.log("Textures loaded successfully");
+      setTexturesLoaded(true);
+      setTextureError(null);
     }
   );
   
+  // Handle texture loading errors separately
+  React.useEffect(() => {
+    const handleTextureError = (event: ErrorEvent) => {
+      if (event.message.includes('textures')) {
+        console.error("Error loading texture:", event);
+        setTextureError("Failed to load Earth textures. Using simplified version.");
+      }
+    };
+    
+    window.addEventListener('error', handleTextureError);
+    return () => window.removeEventListener('error', handleTextureError);
+  }, []);
+
   // Auto-rotate but slower when no interaction
   useFrame((state, delta) => {
     if (groupRef.current) {
@@ -58,12 +76,13 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
       <mesh>
         <sphereGeometry args={[1, 64, 64]} />
         <meshPhongMaterial 
-          map={earthTextures.map}
-          bumpMap={earthTextures.bumpMap}
+          map={textures.map}
+          bumpMap={textures.bumpMap}
           bumpScale={0.05}
-          specularMap={earthTextures.specularMap}
+          specularMap={textures.specularMap}
           specular={new THREE.Color('grey')}
-          normalMap={earthTextures.normalMap}
+          normalMap={textures.normalMap}
+          color={textureError ? fallbackColor : undefined}
           shininess={5}
         />
       </mesh>
@@ -72,10 +91,11 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
       <mesh>
         <sphereGeometry args={[1.01, 64, 64]} />
         <meshPhongMaterial 
-          map={earthTextures.cloudsMap}
+          map={textures.cloudsMap}
           transparent={true}
           opacity={0.3}
           depthWrite={false}
+          color={textureError ? fallbackCloudColor : undefined}
         />
       </mesh>
 
