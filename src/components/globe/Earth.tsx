@@ -19,15 +19,23 @@ interface GlobeProps {
 const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countries }) => {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load textures - corrigindo caminhos para garantir que sejam encontrados
-  const [earthMap, earthBump, earthSpec, earthNormal, cloudMap] = useTexture([
-    "/earth_atmos_4k.jpg",
-    "/earth_specular_2k.jpg",
-    "/earth_specular_2k.jpg",
-    "/earth_normal_2k.jpg",
-    "/earth_clouds_1k.png",
-  ]);
-
+  // Load textures with proper error handling
+  const earthTextures = useTexture(
+    {
+      map: '/textures/earth_daymap.jpg',
+      bumpMap: '/textures/earth_bump.jpg',
+      specularMap: '/textures/earth_specular.jpg',
+      normalMap: '/textures/earth_normal.jpg',
+      cloudsMap: '/textures/earth_clouds.jpg',
+    },
+    (textures) => {
+      console.log("Textures loaded successfully:", textures);
+    },
+    (error) => {
+      console.error("Error loading textures:", error);
+    }
+  );
+  
   // Auto-rotate but slower when no interaction
   useFrame((state, delta) => {
     if (groupRef.current) {
@@ -50,12 +58,12 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
       <mesh>
         <sphereGeometry args={[1, 64, 64]} />
         <meshPhongMaterial 
-          map={earthMap}
-          bumpMap={earthBump}
+          map={earthTextures.map}
+          bumpMap={earthTextures.bumpMap}
           bumpScale={0.05}
-          specularMap={earthSpec}
+          specularMap={earthTextures.specularMap}
           specular={new THREE.Color('grey')}
-          normalMap={earthNormal}
+          normalMap={earthTextures.normalMap}
           shininess={5}
         />
       </mesh>
@@ -64,7 +72,7 @@ const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countri
       <mesh>
         <sphereGeometry args={[1.01, 64, 64]} />
         <meshPhongMaterial 
-          map={cloudMap}
+          map={earthTextures.cloudsMap}
           transparent={true}
           opacity={0.3}
           depthWrite={false}
