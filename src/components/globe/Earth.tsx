@@ -4,6 +4,8 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import { Country } from "@/data/countries";
+import { latLongToVector3 } from "@/utils/globeUtils";
+import { EarthAurora, AnimatedClouds, PulseMarker } from "./EarthComponents";
 
 interface GlobeProps {
   onCountrySelect: (country: Country) => void;
@@ -17,13 +19,13 @@ interface GlobeProps {
 const Earth: React.FC<GlobeProps> = ({ onCountrySelect, selectedCountry, countries }) => {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load textures from local public folder
+  // Load textures - corrigindo caminhos para garantir que sejam encontrados
   const [earthMap, earthBump, earthSpec, earthNormal, cloudMap] = useTexture([
-    "/textures/earth_atmos_4k.jpg",
-    "/textures/earth_specular_2k.jpg",
-    "/textures/earth_specular_2k.jpg",
-    "/textures/earth_normal_2k.jpg",
-    "/textures/earth_clouds_1k.png",
+    "/earth_atmos_4k.jpg",
+    "/earth_specular_2k.jpg",
+    "/earth_specular_2k.jpg",
+    "/earth_normal_2k.jpg",
+    "/earth_clouds_1k.png",
   ]);
 
   // Auto-rotate but slower when no interaction

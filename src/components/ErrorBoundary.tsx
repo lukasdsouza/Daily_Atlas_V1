@@ -9,6 +9,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
 class ErrorBoundary extends Component<Props, State> {
@@ -23,6 +24,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error("ErrorBoundary caught an error:", error, errorInfo);
+    this.setState({ errorInfo });
   }
 
   render(): ReactNode {
@@ -36,6 +38,11 @@ class ErrorBoundary extends Component<Props, State> {
             <p className="mb-4 text-muted-foreground">
               Something went wrong with this component. Try refreshing the page or using a different browser.
             </p>
+            {this.state.error && (
+              <div className="mb-4 mt-2 p-2 bg-black/40 rounded-md text-left overflow-auto max-h-32 text-xs text-red-400">
+                <p>Error: {this.state.error.toString()}</p>
+              </div>
+            )}
             <button
               className="space-button"
               onClick={() => this.setState({ hasError: false })}
