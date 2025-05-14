@@ -30,7 +30,7 @@ const PlacesExplorer: React.FC<PlacesExplorerProps> = ({
 
   if (!isRio) return null;
 
-  // Obter o nome da cidade atual a partir dos lugares
+  // Get the name of the current city from the places
   const cityName = places.length > 0 && places[0].address 
     ? places[0].address.split(',')[0] 
     : "esta cidade";
